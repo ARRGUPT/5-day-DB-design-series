@@ -42,7 +42,7 @@ The goal is to design a database to:
 
 ## 📊 ER Diagram
 
-![ER Diagram](./image.png)
+![ER Diagram](./day-01-instagram-thrift-store/image.png)
 
 ## 🚀 Learning
 
