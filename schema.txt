@@ -1,0 +1,73 @@
+customers [icon: user] {
+  id serial pk
+  name VARCHAR(100) not null
+  email VARCHAR(322) unique not null
+  phone VARCHAR(15) not null
+  age INT 
+  address text
+  country VARCHAR(15)
+  state VARCHAR(15)
+  city VARCHAR(15)
+  pincode VARCHAR(15)
+}
+
+orders [icon: shopping-cart] {
+  id serial pk
+  customer_id int fk
+  order_date timestamp
+  total_amount decimal(10, 2)
+  order_status enum(order_received, shipped, delivered, cancelled)
+}
+
+payments [icon: payment] {
+  id serial pk
+  order_id int fk
+  amount decimal(10, 2)
+  payment_date timestamp
+  payment_method enum(UPI, CASH, CARD)
+  payment_status enum(success, pending, failed)
+  payment_txn_id VARCHAR(250)
+}
+
+products [icon: box] {
+  id serial pk
+  name VARCHAR(100) not null
+  product_category enum(thrifted, handmade)
+  brand VARCHAR(100)
+  category enum(men, women, kids)
+  type enum(topwear, bottomwear)
+  gender enum(men, women, unisex)
+}
+
+product_variants [icon: box] {
+  id serial pk
+  product_id int fk
+  size VARCHAR(10)
+  color VARCHAR(20)
+  condition VARCHAR(20) // important for thrift
+}
+
+inventory [icon: boxes] {
+  id serial pk
+  product_variant_id  int fk
+  quantity int
+  availability_status enum(in_stock, out_of_stock, reserved)
+  reserved_qnt int // for COD
+  last_updated timestamp
+}
+
+order_items [icon: list] {
+  id serial pk
+  order_id int fk
+  product_variant_id  int fk
+  quantity int
+  unit_price decimal(10,2)
+  total_price decimal(10,2) // quantity * unit_price
+}
+
+customers.id < orders.customer_id
+orders.id < order_items.order_id
+products.id < product_variants.product_id
+product_variants.id < order_items.product_variant_id
+product_variants.id - inventory.product_variant_id
+orders.id - payments.order_id
