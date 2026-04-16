@@ -1,0 +1,119 @@
+users [icon: user, color: blue] {
+  id serial pk
+  displayName VARCHAR(100) not null
+  role VARCHAR(50) not null
+  email VARCHAR(322) not null unique
+  phone VARCHAR(15) 
+  dob date
+  gender VARCHAR(20) not null
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+plans [icon: money, color: green] {
+  id serial pk
+  name VARCHAR(100) not null
+  trainer_id int fk
+  price decimal(10,2) not null
+  duration_days INT // 30, 60, 90
+  timing VARCHAR(50) not null // 8AM, 5PM, etc
+  description text
+  include_diet boolean
+  include_workout boolean
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+subscriptions [icon: plus, color: green] {
+  id serial pk
+  plan_id int fk
+  user_id int fk
+  start_date date not null
+  end_date date not null
+  status enum(active, expired, cancelled) not null
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+payments [icon: money, color: orange] {
+  id serial pk
+  subscription_id int fk
+  amount decimal(10,2) not null
+  payment_method enum(UPI, CARD, net_banking, cash)
+  payment_status enum(success, failed, refunded)
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+sessions [icon: clock, color: purple] {
+  id serial pk
+  type enum(consultation, live, check in call) not null
+  trainer_id int fk
+  client_id int fk
+  scheduled_at timestamp not null
+  status enum(pending, completed, cancelled)
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+workout_plan [icon: dumbbell, color: red] {
+  id serial pk
+  plan_id int fk
+  title VARCHAR(100)
+  description text
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+diet_plan [icon: dice, color: red] {
+  id serial pk
+  plan_id int fk
+  title VARCHAR(100)
+  description text
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+check_ins [icon: check, color: blue] {
+  id serial pk
+  user_id int fk
+  session_id int fk
+  date date
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+bodyMetrics [icon: analytics, color: red] {
+  id serial pk
+  checkin_id int fk
+  chest decimal(5,2) not null
+  waist decimal(5,2) not null
+  height decimal(5,2) not null
+  weight decimal(5,2) not null
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+trainerFeedback [icon: reply, color: red] {
+  id serial pk
+  trainer_id int fk
+  checkin_id int fk
+  feedback text
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+
+users.id < subscriptions.user_id
+users.id < plans.trainer_id
+subscriptions.plan_id - plans.id
+workout_plan.plan_id - plans.id
+diet_plan.plan_id - plans.id
+payments.subscription_id - subscriptions.id
+sessions.client_id > users.id
+sessions.trainer_id - users.id
+check_ins.user_id - users.id
+check_ins.session_id - sessions.id
+bodyMetrics.checkin_id - check_ins.id
+trainerFeedback.checkin_id - check_ins.id
+trainerFeedback.trainer_id - users.id
