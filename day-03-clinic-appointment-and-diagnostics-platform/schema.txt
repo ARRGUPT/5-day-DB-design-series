@@ -1,0 +1,76 @@
+doctor [icon: user, color: green] {
+  id serial pk
+  name VARCHAR(50) not null
+  dob DATE not null
+  years_of_experience INT not null
+  speciality VARCHAR(50) not null
+  email VARCHAR(322) not null unique
+  phone VARCHAR(15)
+  gender VARCHAR(20) not null
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+patient [icon: user, color: blue] {
+  id serial pk
+//   report_id int fk
+  name VARCHAR(50) not null
+  age INT not null // can be (0-120)
+  email VARCHAR(322) not null unique
+  phone VARCHAR(15)
+  gender VARCHAR(20) not null
+  hometown VARCHAR(50) not null
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+appointment [icon: rectangle-ellipsis, color: orange] {
+  id serial pk
+  patient_id int fk
+  doctor_id int fk
+  status enum[scheduled, completed, cancelled, no_show]
+  date timestamp 
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+consultation [icon: activity, color: purple] {
+  id serial pk
+  appointment_id int fk
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+diagnostic_test [icon: adjust, color: yellow] {
+  id serial pk
+  consultation_id int fk
+  name VARCHAR(100) not null
+  status enum[prescribed, in_progress, completed] not null
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+report [icon: report, color: red] {
+  id serial pk
+  test_id int fk
+  generated_at timestamp not null
+  result TEXT not null
+}
+
+payment [icon: payment, color: yellow] {
+  id serial pk
+  consultation_id int fk
+  amount decimal(10,2) not null
+  payment_method enum[UPI, CARD, net_banking, cash]
+  payment_status enum[success, failed, refunded]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+
+doctor.id < appointment.doctor_id
+patient.id < appointment.patient_id
+appointment.id - consultation.appointment_id
+consultation.id < diagnostic_test.consultation_id
+diagnostic_test.id - report.test_id
+consultation.id < payment.consultation_id
