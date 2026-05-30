@@ -1,0 +1,66 @@
+parking_session [icon: timer-reset, color: blue] {
+  id serial pk
+  entry_time timestamp not null
+  exit_time timestamp
+  vehicle_id int fk
+  spot_id int fk
+  fee decimal(10, 2) default 0
+  status enum[active, completed] not null
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+vehicle [icon: car, color: green] {
+  id serial pk
+  type enum[bike, car, SUV, cab, EV] not null
+  company_name VARCHAR(50) not null
+  vehicle_no VARCHAR(50) not null unique
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+parking_zone [icon: pointer, color: purple] {
+  id serial pk
+  zone_name VARCHAR(20) not null
+  level VARCHAR(20) not null
+// Zone A - Level 1,
+// Zone B - Level 1,
+// Zone C - Level 2,
+// VIP Zone,
+// EV Zone
+  createdAt timestamp
+  updatedAt timestamp
+}
+parking_spot [icon: spline-pointer, color: red] {
+  id serial pk
+  parking_zone_id int fk
+  type enum[general, exhibitors, vip_guests, staff, ev_charging]
+  spot_no int not null
+  status enum[available, occupied, maintenance] not null
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+parking_ticket [icon: ticket, color: yellow] {
+  id serial pk
+  parking_session_id int fk
+  ticket_number VARCHAR(50) not null unique
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+payment [icon: payment, color: orange] {
+  id serial pk
+  parking_session_id int fk
+  amount decimal(10, 2) not null
+  payment_method enum[UPI, cash, net_banking, card]
+  payment_status enum[pending, success, refunded]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+vehicle.id < parking_session.vehicle_id
+parking_spot.id < parking_session.spot_id
+payment.parking_session_id - parking_session.id
+parking_ticket.parking_session_id - parking_session.id
+parking_spot.parking_zone_id > parking_zone.id
